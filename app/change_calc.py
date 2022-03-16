@@ -11,8 +11,8 @@ def calculate_change(amt_tendered, cost, available_denominations):
     change_possibilities = []
 
     for permutation in possible_permutations:
-        # if permutation[0] == 1:
-        #     continue
+        if permutation[0] == 1:
+            continue
         remainder_amount = amt_tendered - cost
         change = {}
         for denomination in permutation:
