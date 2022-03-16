@@ -13,7 +13,7 @@ transactions = {
         "item_name": "apple",
         "price": 125,
         "currency_inserted": 155
-    } 
+    }
 }
 
 class Transaction(BaseModel):
@@ -35,20 +35,9 @@ def read_item(transaction_id : int):
 def make_change(transaction_id : int):
     return calculate_change(transactions[transaction_id]["currency_inserted"], transactions[transaction_id]["price"],  [25, 10, 5, 1])
 
-# @app.post("/make-new-item-and-change/{transaction_id}")
-# def make_change(transaction_id : int, transactions: Transaction):
-#     if transaction_id in transactions:
-#         return {"Error": "Transaction already exists"}
-#     if transaction_id not in transactions:
-#         return {"Error": "Transaction does not exist"}
-
-#     if transaction.item_name != None:
-#         transactions[transaction_id].item_name = transaction.item_name
-
-#     if transaction.price != None:
-#         transactions[transaction_id].price = transaction.price
-
-#     if transaction.currency_inserted != None:
-#         transactions[transaction_id].currency_instered = transaction.currency_inserted
-# 
-#     return calculate_change(transactions[transaction_id].price, transactions[transaction_id].currency_inserted, [25, 10, 5, 1])
+@app.post("/make-new-item-and-change/{transaction_id}")
+def make_change(transaction_id : int, transaction: Transaction):
+    if transaction_id in transactions:
+        return {"Error": "Transaction already exists"}
+    transactions[transaction_id] = transaction
+    return calculate_change(transactions[transaction_id].currency_inserted, transactions[transaction_id].price,  [25, 10, 5, 1])
