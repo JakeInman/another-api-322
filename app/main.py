@@ -33,7 +33,7 @@ def read_item(transaction_id : int):
 
 @app.get("/make-change/{transaction_id}")
 def make_change(transaction_id : int):
-    return calculate_change(transactions[transaction_id]["currency_inserted"], transactions[transaction_id]["price"],  [25, 10, 5, 1])
+    return calculate_change(transactions[transaction_id].currency_inserted, transactions[transaction_id].price,  [25, 10, 5, 1])
 
 @app.post("/make-new-item-and-change/{transaction_id}")
 def make_change(transaction_id : int, transaction: Transaction):
