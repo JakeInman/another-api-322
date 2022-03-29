@@ -1,10 +1,10 @@
-# from array import array
-# from typing import Optional
-# from setuptools import Require
+from array import array
+from typing import Optional
+from setuptools import Require
 from fastapi import FastAPI
 from pydantic import BaseModel
 from change_calc import calculate_change
-# import requests
+import requests
 
 app = FastAPI()
 
