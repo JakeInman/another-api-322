@@ -1,20 +1,12 @@
-from array import array
+# from array import array
 from typing import Optional
-from setuptools import Require
+# from setuptools import Require
 from fastapi import FastAPI
 from pydantic import BaseModel
 from change_calc import calculate_change
-import requests
+# import requests
 
 app = FastAPI()
-
-transactions = {
-    1: {
-        "item_name": "apple",
-        "price": 125,
-        "currency_inserted": 155
-    }
-}
 
 class Transaction(BaseModel):
     item_name: str
@@ -25,6 +17,10 @@ class UpdateTransaction(BaseModel):
     item_name: Optional[str] = None
     price: Optional[int] = None
     currency_insterted: Optional[int] = None
+
+transactions = {
+    1: Transaction(item_name="apple", price=125, currency_inserted=155)
+}
 
 @app.get("/")
 def read_root():
@@ -53,13 +49,13 @@ def update_transaction(transaction_id: int, transaction: UpdateTransaction):
         return {"Error": "Transaction does not exist"}
 
     if transaction.item_name != None:
-        transactions[transaction_id]["item_name"] = transaction.item_name
+        transactions[transaction_id].item_name = transaction.item_name
 
     if transaction.price != None:
-        transactions[transaction_id]["price"] = transaction.price
+        transactions[transaction_id].price = transaction.price
 
     if transaction.currency_insterted != None:
-        transactions[transaction_id]["currency_inserted"] = transaction.currency_insterted
+        transactions[transaction_id].currency_inserted = transaction.currency_insterted
 
     return transactions[transaction_id]
 
