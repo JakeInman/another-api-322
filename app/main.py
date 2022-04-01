@@ -1,10 +1,7 @@
-# from array import array
 from typing import Optional
-# from setuptools import Require
 from fastapi import FastAPI
 from pydantic import BaseModel
 from change_calc import calculate_change
-# import requests
 
 app = FastAPI()
 
@@ -33,7 +30,7 @@ def read_root():
 def read_item(transaction_id : int):
     if transaction_id not in transactions:
         return {
-            "status": "ERROR: Item Not Found",
+            "status": "ERROR: Transaction Not Found",
             "message": "Sorry, we could not locate that transaction."
             }
     return transactions[transaction_id]  
@@ -42,7 +39,7 @@ def read_item(transaction_id : int):
 def make_change(transaction_id : int):
     if transaction_id not in transactions:
         return {
-            "status": "ERROR: Item Not Found",
+            "status": "ERROR: Transaction Not Found",
             "message": "Sorry, we could not locate that transaction."
             }
     return calculate_change(transactions[transaction_id].currency_inserted, transactions[transaction_id].price,  [25, 10, 5, 1])
@@ -61,7 +58,7 @@ def make_change(transaction_id : int, transaction: Transaction):
 def update_transaction(transaction_id: int, transaction: UpdateTransaction):
     if transaction_id not in transactions:
         return {
-            "status": "ERROR: Item Not Found",
+            "status": "ERROR: Transaction Not Found",
             "message": "Sorry, we could not locate that transaction."
             }
 
@@ -80,7 +77,7 @@ def update_transaction(transaction_id: int, transaction: UpdateTransaction):
 def delete_transaction(transaction_id: int):
     if transaction_id not in transactions:
         return {
-            "status": "ERROR: Item Not Found",
+            "status": "ERROR: Transaction Not Found",
             "message": "Sorry, we could not locate that transaction."
             }
     del transactions[transaction_id]
