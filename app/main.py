@@ -5,19 +5,33 @@ from change_calc import calculate_change
 
 app = FastAPI()
 
-class Transaction(BaseModel):
-    item_name: str
+class Item(BaseModel):
+    name: str
     price: int
+
+class UpdateItem(BaseModel):
+    name: Optional[str] = None
+    price: Optional[int] = None
+
+class Cart(BaseModel):
+    item_list: dict
+    item_count: int
+    total_cost: int
     currency_inserted: int
 
-class UpdateTransaction(BaseModel):
-    item_name: Optional[str] = None
-    price: Optional[int] = None
-    currency_insterted: Optional[int] = None
+# class UpdateCart(BaseModel):
+#     item_list: Optional[dict] = None
+#     item_count: Optional[int] = None
+#     total_cost: Optional[int] = None
+#     currency_insterted: Optional[int] = None
 
-transactions = {
-    1: Transaction(item_name="apple", price=125, currency_inserted=155)
+
+items = {
+    1: Item(name="apple", price=125),
+    2: Item(name="orange", price=200)
 }
+
+cart = [] 
 
 @app.get("/")
 def read_root():
@@ -26,62 +40,82 @@ def read_root():
         "message": "Hello, please enter your item."
         }
 
-@app.get("/show-transaction/{transaction_id}")
-def read_item(transaction_id : int):
-    if transaction_id not in transactions:
+@app.get("/show-item/{item_id}")
+def read_item(item_id : int):
+    if item_id not in items:
         return {
-            "status": "ERROR: Transaction Not Found",
-            "message": "Sorry, we could not locate that transaction."
+            "status": "ERROR: Item Not Found",
+            "message": "Sorry, we could not locate that item."
             }
-    return transactions[transaction_id]  
+    return items[item_id]
 
-@app.get("/make-change/{transaction_id}")
-def make_change(transaction_id : int):
-    if transaction_id not in transactions:
+@app.get("/view-cart")
+def view_cart(cart):
+    if cart.length == 0:
         return {
-            "status": "ERROR: Transaction Not Found",
-            "message": "Sorry, we could not locate that transaction."
+            "status": "ERROR: Cart Is Empty",
+            "message": "Sorry, we could not locate any items in your cart."
             }
-    return calculate_change(transactions[transaction_id].currency_inserted, transactions[transaction_id].price,  [25, 10, 5, 1])
+    return cart
 
-@app.post("/make-new-item-and-change/{transaction_id}")
-def make_change(transaction_id : int, transaction: Transaction):
-    if transaction_id in transactions:
+@app.get("/checkout")
+def checkout(cart):
+    if len(cart) == 0:
         return {
-            "status": "ERROR: Transaction Already Exists",
-            "messsage": "Sorry, that transaction already exists."
+            "status": "ERROR: Cart Is Empty",
+            "message": "Sorry, we could not locate any items in your cart."
             }
-    transactions[transaction_id] = transaction
-    return calculate_change(transactions[transaction_id].currency_inserted, transactions[transaction_id].price,  [25, 10, 5, 1])
+    return calculate_change(cart[currency_inserted], cart[total_cost],  [25, 10, 5, 1])
 
-@app.put("/update-transaction/{transaction_id}")
-def update_transaction(transaction_id: int, transaction: UpdateTransaction):
-    if transaction_id not in transactions:
+@app.post("/make-new-item/{item_id}")
+def make_new_item(item_id : int, item: Item):
+    if item_id in items:
         return {
-            "status": "ERROR: Transaction Not Found",
-            "message": "Sorry, we could not locate that transaction."
+            "status": "ERROR: Item Already Exists",
+            "messsage": "Sorry, that item already exists."
             }
+    items[item_id] = item
+    return item
 
-    if transaction.item_name != None:
-        transactions[transaction_id].item_name = transaction.item_name
-
-    if transaction.price != None:
-        transactions[transaction_id].price = transaction.price
-
-    if transaction.currency_insterted != None:
-        transactions[transaction_id].currency_inserted = transaction.currency_insterted
-
-    return transactions[transaction_id]
-
-@app.delete("/delete-transaction/{transaction_id}")
-def delete_transaction(transaction_id: int):
-    if transaction_id not in transactions:
+@app.post("/add-item-to-cart/{item_id}")
+def add_item_to_cart(item_id: int):
+    if item_id not in items:
         return {
-            "status": "ERROR: Transaction Not Found",
-            "message": "Sorry, we could not locate that transaction."
+            "status": "ERROR: Item Not Found",
+            "message": "Sorry, we could not locate that item."
             }
-    del transactions[transaction_id]
+    cart.append(items[item_id])
+    return cart
+
+
+@app.put("/update-item/{item_id}")
+def update_item(item_id: int, item: UpdateItem):
+    if item_id not in items:
+        return {
+            "status": "ERROR: Item Not Found",
+            "message": "Sorry, we could not locate that item."
+            }
+
+    if item.name != None:
+        items[item_id].name = item.name
+
+    if item.price != None:
+        items[item_id].price = item.price
+
+    if item.currency_insterted != None:
+        items[item_id].currency_inserted = item.currency_insterted
+
+    return items[item_id]
+
+@app.delete("/delete-item/{item_id}")
+def delete_item(item_id: int):
+    if item_id not in items:
+        return {
+            "status": "ERROR: Item Not Found",
+            "message": "Sorry, we could not locate that item."
+            }
+    del items[item_id]
     return{
         "status": "Successful Deletion",
-        "message": "Transaction deleted successfully."
+        "message": "Item deleted successfully."
         }
